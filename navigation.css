@@ -1,0 +1,23 @@
+.memory-orb-routes, .memory-orb-steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+    margin: 0.4rem 0;
+}
+.memory-orb-routes button, .memory-orb-steps button {
+    min-height: 40px;
+    white-space: normal;
+    height: auto;
+}
+.memory-orb-routes button[aria-pressed="true"] {
+    box-shadow: inset 0 0 0 2px var(--interactive-accent);
+}
+.memory-orb-step-label {
+    flex: 1 0 100%;
+    overflow-wrap: anywhere;
+}
+.memory-orb-index-status {
+    color: var(--text-muted);
+    font-size: var(--font-ui-small);
+}

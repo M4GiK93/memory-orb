@@ -1,0 +1,9 @@
+{
+  "id": "memory-orb",
+  "name": "Memory Orb",
+  "version": "1.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "Explore linked notes in a zoomable orb, follow memory pathways, and read or capture memories in place.",
+  "author": "Chris Mir",
+  "isDesktopOnly": false
+}
