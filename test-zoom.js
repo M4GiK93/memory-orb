@@ -24,11 +24,17 @@ Object.assign(orb, {
     yaw: 0, pitch: 0.08, schedule() {}, hover() {},
     hit: () => ({ node: { path: "memory.md" } }), openNote: () => opened++,
 });
-const touch = (pointerId, x, y) => ({ pointerId, clientX: x, clientY: y, button: 0, pointerType: "touch" });
+let handledDowns = 0;
+const touch = (pointerId, x, y) => ({
+    pointerId, clientX: x, clientY: y, button: 0, pointerType: "touch",
+    stopPropagation() { handledDowns++; },
+});
 
 // The original midpoint is 30 px right and 10 px above the viewport center.
 orb.down(touch(1, 230, 150));
 orb.down(touch(2, 270, 150));
+orb.down(touch(2, 270, 150));
+assert.equal(handledDowns, 2);
 orb.move(touch(1, 215, 160));
 orb.move(touch(2, 295, 160));
 assert.deepEqual(orb.view, { zoom: 2, x: -25, y: 20 });

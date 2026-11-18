@@ -388,6 +388,8 @@ class Orb {
 
     down(event) {
         if (event.button !== 0 || this.pointers.has(event.pointerId)) return;
+        // Obsidian interprets rapid canvas gestures as a request to edit the containing note.
+        event.stopPropagation();
         this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY, startX: event.clientX, startY: event.clientY, dragged: false });
         this.canvas.setPointerCapture(event.pointerId);
         if (this.pointers.size >= 2) {
