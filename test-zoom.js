@@ -13,6 +13,8 @@ assert.deepEqual([...activeRegions("", [], {node: {region: "synthesis"}}, workin
 
 const orb = Object.create(Orb.prototype);
 let opened = 0;
+let clears = 0;
+let target = "memory.md";
 Object.assign(orb, {
     stage: { clientWidth: 400, clientHeight: 300 },
     canvas: {
@@ -22,7 +24,13 @@ Object.assign(orb, {
     zoomOut: {}, zoomIn: {}, zoomReset: { setAttribute() {} },
     pointers: new Map(), view: { zoom: 1, x: 0, y: 0 },
     yaw: 0, pitch: 0.08, schedule() {}, hover() {},
-    hit: () => ({ node: { path: "memory.md" } }), openNote: () => opened++,
+    hit: () => target && { node: { path: target } },
+    openNote(path, { scrollReader }) {
+        assert.equal(scrollReader, false);
+        this.selectedPath = path;
+        opened++;
+    },
+    clearSelection() { this.selectedPath = null; clears++; },
 });
 let handledDowns = 0;
 const touch = (pointerId, x, y) => ({
@@ -56,6 +64,29 @@ assert.equal(opened, 0);
 orb.down(touch(4, 100, 100));
 orb.up(touch(4, 100, 100));
 assert.equal(opened, 1);
+const tap = () => {
+    orb.down(touch(5, 100, 100));
+    orb.up(touch(5, 100, 100));
+};
+const camera = { ...orb.view, yaw: orb.yaw, pitch: orb.pitch };
+tap();
+assert.equal(orb.selectedPath, null);
+assert.equal(clears, 1);
+tap();
+target = "other.md";
+tap();
+assert.equal(orb.selectedPath, target);
+orb.down(touch(6, 100, 100));
+orb.endPointer(touch(6, 100, 100));
+orb.up(touch(6, 100, 100));
+assert.equal(orb.selectedPath, target);
+target = null;
+tap();
+tap();
+assert.equal(orb.selectedPath, null);
+assert.equal(opened, 3);
+assert.equal(clears, 2);
+assert.deepEqual({ ...orb.view, yaw: orb.yaw, pitch: orb.pitch }, camera);
 orb.zoomBy(100);
 assert.equal(orb.view.zoom, 8);
 orb.zoomBy(0.001);
@@ -64,4 +95,4 @@ orb.resetView();
 assert.deepEqual(orb.view, { zoom: 1, x: 0, y: 0 });
 assert.equal(orb.yaw, 0);
 assert.equal(orb.zoomOut.disabled, true);
-console.log("Zoom anchor, two-finger pan, release, rotation, tap, limits and reset passed.");
+console.log("Zoom, pan, rotation, tap selection, repeat-tap and empty-space deselection passed.");

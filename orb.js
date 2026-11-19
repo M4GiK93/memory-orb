@@ -51,11 +51,12 @@ function projectedCap(r, facing, side) {
 }
 
 class Orb {
-    constructor(container, { getGraph, openNote }) {
+    constructor(container, { getGraph, openNote, clearSelection }) {
         this.doc = container.ownerDocument;
         this.win = this.doc.defaultView;
         this.getGraph = getGraph;
         this.openNote = openNote;
+        this.clearSelection = clearSelection;
         this.events = new this.win.AbortController();
         this.yaw = 0;
         this.pitch = 0.08;
@@ -102,7 +103,7 @@ class Orb {
         this.zoomOut.disabled = true;
         this.zoomReset = control("Reset orb view", "1×", () => this.resetView());
         this.zoomIn = control("Zoom in", "+", () => this.zoomBy(1.5));
-        this.hint = this.element("p", this.root, "memory-orb-hint", "Drag to rotate. Pinch to zoom. Tap a node to explore.");
+        this.hint = this.element("p", this.root, "memory-orb-hint", "Drag to rotate. Pinch to zoom. Tap a node to read it. Tap it again or tap empty space to clear.");
         this.inspectorMount = this.element("div", this.root, "memory-orb-inspector-mount");
         this.status = this.element("div", this.root, "memory-orb-status");
         this.status.setAttribute("role", "status");
@@ -135,7 +136,7 @@ class Orb {
         });
         this.listen(this.list, "click", event => {
             const button = event.target.closest("button[data-path]");
-            if (button && this.list.contains(button)) this.openNote(button.dataset.path);
+            if (button && this.list.contains(button)) this.toggleNode(button.dataset.path);
         });
         this.listen(this.canvas, "pointerdown", event => this.down(event));
         this.listen(this.canvas, "pointermove", event => this.move(event));
@@ -276,6 +277,11 @@ class Orb {
             }
             this.schedule();
         }
+    }
+
+    toggleNode(path, options) {
+        if (path === this.selectedPath) this.clearSelection();
+        else this.openNote(path, options);
     }
 
     updateSelection() {
@@ -437,7 +443,8 @@ class Orb {
         this.endPointer(event);
         if (!p.multi && !p.dragged && Math.hypot(event.clientX - p.startX, event.clientY - p.startY) < 5) {
             const hit = this.hit(event);
-            if (hit) this.openNote(hit.node.path);
+            if (hit) this.toggleNode(hit.node.path, { scrollReader: false });
+            else if (this.selectedPath) this.clearSelection();
         }
     }
 

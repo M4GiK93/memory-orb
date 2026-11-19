@@ -26,6 +26,9 @@ Your existing Markdown notes appear automatically, including notes with no links
 | Move the magnified view | Slide two fingers together | Use **Shift** and an arrow key |
 | Return to the starting view | Tap the current zoom value | Press **0** |
 | Read a note | Tap a node or choose its name under **Browse notes** | Tab to a note in the list and press **Enter** |
+| Clear a selection | Tap the selected node again, tap empty space on the orb, or tap **Close** in the reader | Activate the same list item again or choose **Close** |
+
+Clearing a node closes its reader and removes its connection highlights. Your zoom, rotation, search, and current pathway stay in place.
 
 At higher magnification, labels help you distinguish nearby nodes. Choosing a note highlights its real connections. Search matches titles, paths, aliases, tags, headings, and locally available note text. The result list contains direct matches. Their immediate neighbors appear on the sphere so you can follow a connection beyond your search.
 
@@ -101,9 +104,9 @@ The plugin reads the open vault through Obsidian. It makes no external network r
 
 **Optional scheduled summaries.** A separately configured local Codex task can supply summaries to `companion/sync.py`. The helper takes JSON from standard input or a named file. Its `baseline` command records IDs from both the active and archived catalogs, `pending` identifies new or changed post-baseline conversations, and `save` writes a short summary to one Markdown note per conversation. It checks for manual changes before updating its managed text. You supply the history access, schedule, vault location, and private state directory separately. The plugin install enables none of those services.
 
-## Verify and install 1.1.0
+## Verify and install 1.1.1
 
-The manifest requires Obsidian **1.5.0 or later**. The release offers `memory-orb-1.1.0.zip` and the individual `main.js`, `manifest.json`, and `styles.css` files. [Download release 1.1.0](https://github.com/M4GiK93/memory-orb/releases/tag/1.1.0)
+The manifest requires Obsidian **1.5.0 or later**. The release offers `memory-orb-1.1.1.zip` and the individual `main.js`, `manifest.json`, and `styles.css` files. [Download release 1.1.1](https://github.com/M4GiK93/memory-orb/releases/tag/1.1.1)
 
 1. Download the zip, `SHA256SUMS`, and `SHA256SUMS.sig` into one folder. Get the `SIGNERS` file from a copy of this repository that you already trust and place it in that folder.
 2. In that folder, verify the signature using OpenSSH. The signer identity is `chris-mir` and the signing namespace is `memory-orb-release`. [OpenSSH signature verification](https://man.openbsd.org/ssh-keygen)
@@ -112,10 +115,10 @@ The manifest requires Obsidian **1.5.0 or later**. The release offers `memory-or
    ssh-keygen -Y verify -f SIGNERS -I chris-mir -n memory-orb-release -s SHA256SUMS.sig < SHA256SUMS
    ```
 
-3. After verification succeeds, check the zip against the signed manifest. On macOS, run the command below and look for `memory-orb-1.1.0.zip: OK`. On Linux, `sha256sum -c -` can replace `shasum -a 256 -c -`. If you downloaded every file in the manifest, you can check them all with `shasum -a 256 -c SHA256SUMS`.
+3. After verification succeeds, check the zip against the signed manifest. On macOS, run the command below and look for `memory-orb-1.1.1.zip: OK`. On Linux, `sha256sum -c -` can replace `shasum -a 256 -c -`. If you downloaded every file in the manifest, you can check them all with `shasum -a 256 -c SHA256SUMS`.
 
    ```sh
-   awk '$2 == "memory-orb-1.1.0.zip" || $2 == "*memory-orb-1.1.0.zip"' SHA256SUMS | shasum -a 256 -c -
+   awk '$2 == "memory-orb-1.1.1.zip" || $2 == "*memory-orb-1.1.1.zip"' SHA256SUMS | shasum -a 256 -c -
    ```
 
 4. Unpack the verified zip. Place `main.js`, `manifest.json`, and `styles.css` directly inside `.obsidian/plugins/memory-orb/` under your vault. If you use a custom Obsidian configuration folder, substitute its name for `.obsidian`.

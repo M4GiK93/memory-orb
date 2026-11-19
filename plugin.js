@@ -29,7 +29,8 @@ class MemoryView extends MarkdownRenderChild {
         this.snapshot();
         this.orb = new Orb(mount, {
             getGraph: query => this.graphFor(query),
-            openNote: path => this.openNote(path)
+            openNote: (path, options) => this.openNote(path, options),
+            clearSelection: () => this.clearSelection()
         });
         const { vault, metadataCache } = this.plugin.app;
         this.inspector = new Inspector(this.orb.inspectorMount, {
@@ -51,8 +52,7 @@ class MemoryView extends MarkdownRenderChild {
                 this.displaySelection(true);
             },
             close: () => {
-                this.history.length = 0;
-                this.displaySelection(false);
+                this.clearSelection();
                 this.orb.canvas.focus({ preventScroll: true });
             }
         });
@@ -74,17 +74,22 @@ class MemoryView extends MarkdownRenderChild {
             revision: file.stat.mtime + "/" + file.stat.size };
     }
 
-    openNote(path) {
+    clearSelection() {
+        this.history.length = 0;
+        this.displaySelection(false);
+    }
+
+    openNote(path, options) {
         const file = this.plugin.app.vault.getAbstractFileByPath(path);
         if (file?.extension !== "md") {
             new Notice("This note has moved or was removed.");
             return;
         }
         if (this.history[this.history.length - 1] !== file) this.history.push(file);
-        this.displaySelection(true);
+        this.displaySelection(true, options);
     }
 
-    displaySelection(reveal) {
+    displaySelection(reveal, { scrollReader = reveal } = {}) {
         const file = this.history[this.history.length - 1];
         this.orb.setSelection(file?.path || null, { reveal });
         if (!file) {
@@ -105,7 +110,7 @@ class MemoryView extends MarkdownRenderChild {
         const revision = file.stat.mtime + "/" + file.stat.size;
         const reload = this.readRevision !== revision;
         this.readRevision = revision;
-        this.inspector.show(file.path, this.history.length > 1, { reload, reveal });
+        this.inspector.show(file.path, this.history.length > 1, { reload, reveal: scrollReader });
     }
 
     snapshot() {
